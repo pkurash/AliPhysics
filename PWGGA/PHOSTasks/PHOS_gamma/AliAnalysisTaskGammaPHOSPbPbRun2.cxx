@@ -692,8 +692,6 @@ void AliAnalysisTaskGammaPHOSPbPbRun2::UserExec(Option_t *)
     //cluster selection
     if ( !clu->IsPHOS() || clu->E()<0.3) 
       continue;
-    if (!fMCArray && (TMath::Abs(clu->GetTOF()) > fTOF)) 
-      continue; // TOF cut for real data only!
     if ((fRunNumber > 209122) && (clu->GetType() != AliVCluster::kPHOSNeutral)) 
        continue; //Run2 cut
     if ((clu->GetM02()) < 0.2 && (clu->E() > 1.))
@@ -717,7 +715,7 @@ void AliAnalysisTaskGammaPHOSPbPbRun2::UserExec(Option_t *)
     FillHistogram(Form("hTofM%d",mod),clu->E(),clu->GetTOF());
     if(clu->E()>1.)
       FillHistogram("hCenTOF",fCentrality,clu->GetTOF());
-    if((clu->GetTOF()>1.5e-7) || (clu->GetTOF() <-2.5e-7) )
+    if((clu->GetTOF()> 1.5e-7) || (clu->GetTOF() <-2.5e-7) )
       continue;
     
     //Apply re-Calibration
@@ -753,7 +751,7 @@ void AliAnalysisTaskGammaPHOSPbPbRun2::UserExec(Option_t *)
     Bool_t dispBit2 = clu->Chi2() < 2.5 * 2.5;
     ph->SetDispBit(dispBit1);
     ph->SetDisp2Bit(dispBit2);
-    ph->SetTOFBit(fMCArray ? kTRUE : clu->GetTOF() < fTOF);
+    ph->SetTOFBit((!fMCArray) && (clu->GetTOF() < fTOF));
     ph->SetTime(clu->GetTOF());
 
     //Track matching
